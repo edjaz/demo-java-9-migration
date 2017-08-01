@@ -30,7 +30,7 @@ $JAVAC \
 $JAR --create \
 	--file build/jars/monitor.utils.jar \
 	-C build/classes/monitor.utils .
-cp build/jars/monitor.utils.jar build/class-path
+cp build/jars/monitor.utils.jar build/module-path
 
 
 echo " > creating monitor.observer"
@@ -42,7 +42,7 @@ $JAVAC \
 $JAR --create \
 	--file build/jars/monitor.observer.jar \
 	-C build/classes/monitor.observer .
-cp build/jars/monitor.observer.jar build/class-path
+cp build/jars/monitor.observer.jar build/module-path
 
 
 echo " > creating monitor.observer.alpha"
@@ -54,7 +54,7 @@ $JAVAC \
 $JAR --create \
 	--file build/jars/monitor.observer.alpha.jar \
 	-C build/classes/monitor.observer.alpha .
-cp build/jars/monitor.observer.alpha.jar build/class-path
+cp build/jars/monitor.observer.alpha.jar build/module-path
 
 
 echo " > creating monitor.observer.beta"
@@ -66,7 +66,7 @@ $JAVAC \
 $JAR --create \
 	--file build/jars/monitor.observer.beta.jar \
 	-C build/classes/monitor.observer.beta .
-cp build/jars/monitor.observer.beta.jar build/class-path
+cp build/jars/monitor.observer.beta.jar build/module-path
 
 
 echo " > creating monitor.statistics"
@@ -78,13 +78,14 @@ $JAVAC \
 $JAR --create \
 	--file build/jars/monitor.statistics.jar \
 	-C build/classes/monitor.statistics .
-cp build/jars/monitor.statistics.jar build/class-path
+cp build/jars/monitor.statistics.jar build/module-path
 
 
 echo " > creating monitor.persistence"
 $JAVAC \
 	--class-path 'build/class-path/*' \
 	--module-path build/module-path \
+	--add-modules monitor.statistics \
 	-d build/classes/monitor.persistence \
 	$(find monitor.persistence/src/main/java -name '*.java')
 $JAR --create \
@@ -92,25 +93,30 @@ $JAR --create \
 	-C build/classes/monitor.persistence .
 cp build/jars/monitor.persistence.jar build/class-path
 
+mv build/class-path/spark-core* build/module-path
+mv build/class-path/jackson-core* build/module-path
+mv build/class-path/jackson-databind* build/module-path
 
 echo " > creating monitor.rest"
 $JAVAC \
 	--class-path 'build/class-path/*' \
 	--module-path build/module-path \
- 	--add-modules java.xml.bind,java.xml.ws.annotation \
 	--patch-module java.xml.ws.annotation=build/class-path/jsr305-3.0.2.jar \
 	-d build/classes/monitor.rest \
 	$(find monitor.rest/src/main/java -name '*.java')
 $JAR --create \
 	--file build/jars/monitor.rest.jar \
 	-C build/classes/monitor.rest .
-cp build/jars/monitor.rest.jar build/class-path
+cp build/jars/monitor.rest.jar build/module-path
 
 
 echo " > creating monitor"
 $JAVAC \
 	--class-path 'build/class-path/*' \
 	--module-path build/module-path \
+	--add-modules monitor.observer.alpha,monitor.observer.beta \
+	--add-modules monitor.utils,monitor.statistics \
+	--add-modules monitor.rest \
 	-d build/classes/monitor \
 	$(find monitor/src/main/java -name '*.java')
 $JAR --create \
