@@ -3,11 +3,16 @@
 echo ""
 echo "--- LAUNCH ---"
 
+#Java executable for standard Linux environment
+export JAVA_EXE=java
+#Java executable for MinGW environment
+#export JAVA_EXE=/c/jdk9/bin/java.exe
+
 echo " > run monitor"
 echo ""
 
 # the classpath is needed for Spark's dependencies
-java9 \
+$JAVA_EXE \
 	--class-path 'build/class-path/*' \
 	--module-path build/module-path \
 	--add-modules monitor.observer.alpha,monitor.observer.beta \
